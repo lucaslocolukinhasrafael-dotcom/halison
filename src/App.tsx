@@ -3,23 +3,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ArrowUpRight, Instagram, Youtube, Twitter, Mail, Play, MessageCircle, X, Check, BarChart3, Users, Globe, Smartphone, ShoppingBag } from 'lucide-react';
 import { ScrollVelocity } from "@/components/ui/scroll-velocity";
 
-declare const __BUILD_DATE__: string;
-
-const getRelativeTime = (dateString: string) => {
-  try {
-    const buildDate = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.max(0, Math.floor((now.getTime() - buildDate.getTime()) / 1000));
-
-    if (diffInSeconds < 60) return 'agora';
-    if (diffInSeconds < 3600) return `há ${Math.floor(diffInSeconds / 60)}min`;
-    if (diffInSeconds < 86400) return `há ${Math.floor(diffInSeconds / 3600)}h`;
-    return `há ${Math.floor(diffInSeconds / 86400)}d`;
-  } catch (e) {
-    return 'há 1h';
-  }
-};
-
 // --- Components ---
 
 const MediaKitModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
@@ -101,15 +84,6 @@ const MobileFrame = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AnalyticsPreview = () => {
-  const [relativeTime, setRelativeTime] = useState(getRelativeTime(__BUILD_DATE__));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRelativeTime(getRelativeTime(__BUILD_DATE__));
-    }, 60000); // Update every minute
-    return () => clearInterval(interval);
-  }, []);
-
   // Generate a sequential pattern of dots for the retention visualization (Progress Bar style)
   const totalDots = 64;
   const retentionRate = 0.674;
@@ -133,7 +107,9 @@ const AnalyticsPreview = () => {
     >
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-white font-semibold text-sm">Estatísticas</h3>
-        <span className="text-xs text-gray-500 font-mono">Atualizado {relativeTime}</span>
+        <span className="text-xs text-gray-500 font-mono uppercase tracking-wider">
+          Métricas 2026
+        </span>
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
