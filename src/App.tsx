@@ -1,0 +1,491 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { ArrowUpRight, Instagram, Youtube, Twitter, Mail, Play, MessageCircle, X, Check, BarChart3, Users, Globe, Smartphone, ShoppingBag } from 'lucide-react';
+import { ScrollVelocity } from "@/components/ui/scroll-velocity";
+
+declare const __BUILD_DATE__: string;
+
+const getRelativeTime = (dateString: string) => {
+  try {
+    const buildDate = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.max(0, Math.floor((now.getTime() - buildDate.getTime()) / 1000));
+
+    if (diffInSeconds < 60) return 'agora';
+    if (diffInSeconds < 3600) return `há ${Math.floor(diffInSeconds / 60)}min`;
+    if (diffInSeconds < 86400) return `há ${Math.floor(diffInSeconds / 3600)}h`;
+    return `há ${Math.floor(diffInSeconds / 86400)}d`;
+  } catch (e) {
+    return 'há 1h';
+  }
+};
+
+// --- Components ---
+
+const MediaKitModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  if (!isOpen) return null;
+
+  const mediaKitImages = [
+    "https://i.imgur.com/XRC8z9t.jpeg",
+    "https://i.imgur.com/S7hDTzV.jpeg",
+    "https://i.imgur.com/WcLmIYx.jpeg",
+    "https://i.imgur.com/hBXPUKd.jpeg",
+    "https://i.imgur.com/rHdGDA2.jpeg",
+    "https://i.imgur.com/7W0QEfn.jpeg",
+    "https://i.imgur.com/azpGvhK.jpeg",
+    "https://i.imgur.com/jsOQYa7.jpeg",
+    "https://i.imgur.com/OYVvHld.jpeg"
+  ];
+
+  return (
+    <AnimatePresence>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+        onClick={onClose}
+      >
+        <motion.div 
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-clipit-bg w-[95vw] h-[90vh] rounded-3xl overflow-hidden shadow-2xl border border-white/10 relative flex flex-col"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex justify-between items-center p-4 border-b border-white/10 bg-clipit-bg z-10">
+            <h3 className="text-white font-display font-bold text-lg">Mídia Kit 2026</h3>
+            <div className="flex items-center gap-2">
+              <a 
+                href="/midia-kit.pdf" 
+                download
+                className="text-xs font-medium text-white hover:text-clipit-accent-green mr-2 flex items-center gap-1"
+              >
+                <ArrowUpRight size={12} className="rotate-180" /> Baixar PDF
+              </a>
+              <button 
+                onClick={onClose}
+                className="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          </div>
+
+          <div className="w-full h-full bg-gray-900 overflow-y-auto custom-scrollbar">
+            <div className="flex flex-col items-center">
+              {mediaKitImages.map((src, index) => (
+                <img 
+                  key={index}
+                  src={src} 
+                  alt={`Mídia Kit Página ${index + 1}`}
+                  className="w-full max-w-5xl h-auto"
+                />
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+const MobileFrame = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="min-h-screen w-full flex justify-center bg-[#111] sm:py-8">
+      <div className="w-full max-w-[400px] bg-clipit-bg sm:rounded-[32px] overflow-hidden shadow-2xl relative min-h-[800px] flex flex-col">
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const AnalyticsPreview = () => {
+  const [relativeTime, setRelativeTime] = useState(getRelativeTime(__BUILD_DATE__));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRelativeTime(getRelativeTime(__BUILD_DATE__));
+    }, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  // Generate a sequential pattern of dots for the retention visualization (Progress Bar style)
+  const totalDots = 64;
+  const retentionRate = 0.674;
+  const filledDots = Math.round(totalDots * retentionRate);
+
+  const dots = Array.from({ length: totalDots }, (_, i) => {
+    const isFilled = i < filledDots;
+    return {
+      id: i,
+      className: isFilled ? 'bg-clipit-accent-green' : 'bg-gray-800'
+    };
+  });
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="bg-clipit-surface rounded-[22px] p-5 mb-4 border border-white/5 shadow-clipit-card"
+    >
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-white font-semibold text-sm">Estatísticas</h3>
+        <span className="text-xs text-gray-500 font-mono">Atualizado {relativeTime}</span>
+      </div>
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <p className="text-gray-400 text-[10px] uppercase tracking-wider mb-1">Seguidores IG</p>
+          <motion.p 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="font-display font-black text-2xl text-white"
+          >
+            12,1K
+          </motion.p>
+        </div>
+        <div>
+          <p className="text-gray-400 text-[10px] uppercase tracking-wider mb-1">Seguindo</p>
+          <motion.p 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+            className="font-display font-black text-2xl text-white"
+          >
+            3.020
+          </motion.p>
+        </div>
+        <div>
+          <p className="text-gray-400 text-[10px] uppercase tracking-wider mb-1">Posts</p>
+          <motion.p 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.5 }}
+            className="font-display font-black text-2xl text-white"
+          >
+            125
+          </motion.p>
+        </div>
+        <div>
+          <p className="text-gray-400 text-[10px] uppercase tracking-wider mb-1">Eng. Médio</p>
+          <motion.p 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.6 }}
+            className="font-display font-black text-2xl text-white"
+          >
+            8,4%
+          </motion.p>
+        </div>
+      </div>
+      
+      {/* Retention Dot Matrix */}
+      <div>
+        <div className="flex justify-between items-end mb-2">
+          <p className="text-white font-medium text-xs">Retenção de audiência</p>
+          <p className="font-display font-bold text-lg text-white">67,4%</p>
+        </div>
+        <div className="grid grid-cols-[repeat(16,1fr)] gap-1">
+          {dots.map((dot, i) => (
+            <motion.div 
+              key={dot.id} 
+              initial={{ opacity: 0, scale: 0 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ 
+                duration: 0.2, 
+                delay: 0.01 * i + 0.5,
+                type: "spring",
+                stiffness: 260,
+                damping: 20
+              }}
+              className={`w-1.5 h-1.5 rounded-full ${dot.className}`} 
+            />
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const HeroSection = () => {
+  return (
+    <div className="relative h-[600px] w-full overflow-hidden bg-clipit-bg">
+      {/* Background Image */}
+      <img 
+        src="https://i.imgur.com/BlQ7yx3.jpeg" 
+        alt="Halison Rondanin"
+        className="absolute inset-0 w-full h-full object-cover opacity-60 object-[center_70%]"
+      />
+      
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-clipit-bg/10 to-clipit-bg" />
+      <div className="absolute bottom-0 left-0 right-0 h-[400px] bg-gradient-to-t from-clipit-bg via-clipit-bg/80 to-transparent" />
+
+      {/* Content */}
+      <div className="absolute bottom-0 left-0 right-0 px-6 pb-12 z-20 flex flex-col justify-end h-full">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <span className="bg-clipit-accent-green text-[#042F16] text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-lg">
+              Criador de Conteúdo
+            </span>
+            <button className="bg-white text-black text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider hover:bg-gray-200 transition-colors shadow-lg">
+              Seguir
+            </button>
+          </div>
+          <div className="mb-3 drop-shadow-2xl">
+            <h1 className="font-display font-black text-6xl uppercase leading-[0.85] tracking-tight text-white block drop-shadow-lg">
+              Halison
+            </h1>
+            <h1 className="font-display font-black text-6xl uppercase leading-[0.85] tracking-tight text-white block drop-shadow-lg">
+              Rondanin
+            </h1>
+          </div>
+          <p className="text-white text-sm font-medium tracking-wide drop-shadow-md bg-black/20 backdrop-blur-sm inline-block px-2 py-1 rounded-md">
+            Conectando marcas a pessoas reais
+          </p>
+        </motion.div>
+      </div>
+
+      {/* Top Bar */}
+      <div className="absolute top-0 left-0 right-0 p-6 flex justify-end items-center z-20">
+        <button className="w-8 h-8 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center border border-white/10 text-white">
+           <div className="flex gap-[2px]">
+             <div className="w-1 h-1 bg-white rounded-full" />
+             <div className="w-1 h-1 bg-white rounded-full" />
+             <div className="w-1 h-1 bg-white rounded-full" />
+           </div>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const CarouselSection = () => {
+  const allImages = [
+    "https://i.imgur.com/UxFJIoi.jpeg",
+    "https://i.imgur.com/JhcBb6p.jpeg",
+    "https://i.imgur.com/mjxyVk9.jpeg",
+    "https://i.imgur.com/0sh7Fam.jpeg",
+    "https://i.imgur.com/PsABG5O.jpeg",
+    "https://i.imgur.com/R9VrPrR.jpeg",
+    "https://i.imgur.com/oMrNy3V.jpeg",
+    "https://i.imgur.com/0bDTcR1.jpeg",
+    "https://i.imgur.com/H5Vea5E.jpeg",
+    "https://i.imgur.com/LGjRQbN.jpeg",
+    "https://i.imgur.com/M98nLXD.jpeg",
+    "https://i.imgur.com/OGPpfMl.jpeg",
+    "https://i.imgur.com/WFY4INU.jpeg",
+    "https://i.imgur.com/vIhQFuQ.jpeg",
+    "https://i.imgur.com/t3cruSE.jpeg",
+    "https://i.imgur.com/ohh37lL.jpeg",
+    "https://i.imgur.com/y48rksi.jpeg",
+    "https://i.imgur.com/d3dRKDB.jpeg",
+    "https://i.imgur.com/1BKoft1.jpeg",
+    "https://i.imgur.com/hWVJ6wu.jpeg",
+    "https://i.imgur.com/r8tQosu.jpeg",
+    "https://i.imgur.com/eK8NJSC.jpeg",
+    "https://i.imgur.com/Sd1xg1U.jpeg",
+    "https://i.imgur.com/WwtsNjZ.jpeg",
+    "https://i.imgur.com/1dDxwXC.jpeg",
+    "https://i.imgur.com/GnUR9zY.jpeg",
+    "https://i.imgur.com/qH3Ua17.jpeg"
+  ];
+
+  // Shuffle array (simple version for this context)
+  const shuffled = [...allImages].sort(() => Math.random() - 0.5);
+  const half = Math.ceil(shuffled.length / 2);
+  const row1 = shuffled.slice(0, half);
+  const row2 = shuffled.slice(half);
+
+  return (
+    <div className="py-8 space-y-4 overflow-hidden bg-clipit-bg">
+      <ScrollVelocity velocity={1} className="h-[240px]">
+        {row1.map((src, i) => (
+          <div key={`row1-${i}`} className="relative h-full w-[160px] shrink-0 mr-4 overflow-hidden">
+            <img 
+              src={src} 
+              alt={`Halison ${i}`}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ))}
+      </ScrollVelocity>
+      
+      <ScrollVelocity velocity={-1} className="h-[240px]">
+        {row2.map((src, i) => (
+          <div key={`row2-${i}`} className="relative h-full w-[160px] shrink-0 mr-4 overflow-hidden">
+            <img 
+              src={src} 
+              alt={`Halison ${i}`}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ))}
+      </ScrollVelocity>
+
+      <ScrollVelocity velocity={2} className="py-2">
+        <span className="text-clipit-accent-green font-display font-black text-4xl uppercase mr-8">LIFESTYLE</span>
+        <span className="text-white font-display font-black text-4xl uppercase mr-8">MODA</span>
+        <span className="text-clipit-accent-green font-display font-black text-4xl uppercase mr-8">VIAGEM</span>
+        <span className="text-white font-display font-black text-4xl uppercase mr-8">CRIADOR</span>
+        <span className="text-clipit-accent-green font-display font-black text-4xl uppercase mr-8">GASTRONOMIA</span>
+        <span className="text-white font-display font-black text-4xl uppercase mr-8">MARKETING</span>
+        <span className="text-clipit-accent-green font-display font-black text-4xl uppercase mr-8">PUBLICIDADE</span>
+      </ScrollVelocity>
+    </div>
+  );
+};
+
+const LinkCard = ({ title, subtitle, icon: Icon, href, highlight, onClick }: { title: string, subtitle: string, icon: any, href: string, highlight?: boolean, onClick?: (e: React.MouseEvent) => void }) => {
+  return (
+    <motion.a 
+      href={href}
+      onClick={onClick}
+      target="_blank"
+      rel="noopener noreferrer"
+      whileHover={{ scale: 0.98 }}
+      whileTap={{ scale: 0.96 }}
+      className={`relative block w-full p-5 rounded-[22px] mb-4 shadow-clipit-card group overflow-hidden ${highlight ? 'bg-clipit-accent-green' : 'bg-clipit-card'}`}
+    >
+      <div className="flex justify-between items-center relative z-10">
+        <div className="flex items-center gap-4">
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${highlight ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-900'}`}>
+            <Icon size={20} />
+          </div>
+          <div>
+            <h3 className={`font-display font-bold text-lg uppercase leading-tight ${highlight ? 'text-[#042F16]' : 'text-gray-900'}`}>
+              {title}
+            </h3>
+            <p className={`text-xs font-medium ${highlight ? 'text-[#042F16]/70' : 'text-gray-500'}`}>
+              {subtitle}
+            </p>
+          </div>
+        </div>
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${highlight ? 'bg-[#042F16]/10 text-[#042F16]' : 'bg-gray-100 text-gray-900'}`}>
+          <ArrowUpRight size={16} />
+        </div>
+      </div>
+    </motion.a>
+  );
+};
+
+const SocialLinks = () => {
+  const socials = [
+    { icon: Instagram, href: "#" },
+    { icon: Youtube, href: "#" },
+    { icon: Twitter, href: "#" },
+    { icon: Mail, href: "#" },
+  ];
+
+  return (
+    <div className="flex justify-center gap-4 py-6">
+      {socials.map((Social, index) => (
+        <motion.a
+          key={index}
+          href={Social.href}
+          whileHover={{ y: -4 }}
+          className="w-12 h-12 rounded-full bg-clipit-surface border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors"
+        >
+          <Social.icon size={20} />
+        </motion.a>
+      ))}
+    </div>
+  );
+};
+
+export default function LinkInBio() {
+  const [isMediaKitOpen, setIsMediaKitOpen] = useState(false);
+
+  React.useEffect(() => {
+    const updateMeta = () => {
+      document.title = "Halison Rondanin";
+      
+      const favicons = ["link[rel*='icon']", "link[rel='shortcut icon']"];
+      favicons.forEach(selector => {
+        const link = document.querySelector(selector) || document.createElement('link');
+        (link as HTMLLinkElement).type = 'image/png';
+        (link as HTMLLinkElement).rel = selector.includes('shortcut') ? 'shortcut icon' : 'icon';
+        (link as HTMLLinkElement).href = 'https://i.imgur.com/VAcP1IJ.png?v=2';
+        if (!link.parentNode) document.getElementsByTagName('head')[0].appendChild(link);
+      });
+    };
+
+    updateMeta();
+    // Re-run after a short delay to override any late-loading scripts
+    const timer = setTimeout(updateMeta, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <MobileFrame>
+      <MediaKitModal isOpen={isMediaKitOpen} onClose={() => setIsMediaKitOpen(false)} />
+      <HeroSection />
+      
+      <div className="flex-1 bg-clipit-bg px-5 pb-10 -mt-10 relative z-20 rounded-t-[32px]">
+        {/* Decorative handle */}
+        <div className="w-12 h-1 bg-white/20 rounded-full mx-auto my-4" />
+        
+        <div className="space-y-2">
+          <LinkCard 
+            title="Quero Anunciar" 
+            subtitle="Destaque sua marca agora" 
+            icon={MessageCircle} 
+            href="https://api.whatsapp.com/send?phone=5516997021091&text=Oi%20Halison%2C%20quero%20fazer%20um%20trabalho%20com%20voc%C3%EA%21" 
+            highlight={true}
+          />
+          
+          <AnalyticsPreview />
+
+          <CarouselSection />
+          
+          <LinkCard 
+            title="GRUPINHO" 
+            subtitle="Ofertas secretas e cupons dos produtos que eu uso" 
+            icon={ShoppingBag} 
+            href="https://chat.whatsapp.com/IZlhEpedJL83o4qwLLDH16?mode=gi_t" 
+          />
+
+          <LinkCard 
+            title="Ver Mídia Kit" 
+            subtitle="Dados, audiência e formatos de parceria" 
+            icon={ArrowUpRight} 
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsMediaKitOpen(true);
+            }}
+          />
+
+          <LinkCard 
+            title="Aula Grátis: Publicidade que Vende" 
+            subtitle="Mini curso de marketing de influência" 
+            icon={Youtube} 
+            href="#" 
+          />
+
+          <LinkCard 
+            title="Meu Portfólio" 
+            subtitle="Veja meus trabalhos recentes" 
+            icon={ArrowUpRight} 
+            href="#" 
+          />
+        </div>
+
+        <SocialLinks />
+        
+        <div className="text-center mt-4 pb-4">
+          <p className="text-white/20 text-[10px] font-display uppercase tracking-widest">
+            © 2026 Halison Rondanin · Todos os direitos reservados
+          </p>
+        </div>
+      </div>
+    </MobileFrame>
+  );
+}
