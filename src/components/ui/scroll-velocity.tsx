@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { motion, useScroll, useSpring, useTransform, useMotionValue, useVelocity, useAnimationFrame, wrap } from "framer-motion"
-import { cn } from "@/lib/utils"
+import { cn } from "../../lib/utils"
 
 interface ScrollVelocityProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode[] | string

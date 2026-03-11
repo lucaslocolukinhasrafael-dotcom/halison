@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowUpRight, Instagram, Youtube, Twitter, Mail, Play, MessageCircle, X, Check, BarChart3, Users, Globe, Smartphone, ShoppingBag } from 'lucide-react';
-import { ScrollVelocity } from "@/components/ui/scroll-velocity";
+import { ScrollVelocity } from "./components/ui/scroll-velocity";
 
 // --- Components ---
 
